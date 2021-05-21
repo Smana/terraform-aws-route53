@@ -48,4 +48,22 @@ resource "aws_route53_record" "this" {
       weight = each.value.weighted_routing_policy.weight
     }
   }
+
+  dynamic "geolocation_routing_policy" {
+    for_each = length(keys(lookup(each.value, "geolocation_routing_policy", {}))) == 0 ? [] : [true]
+
+    content {
+      continent   = lookup(each.value.geolocation_routing_policy, "continent", "")
+      country     = lookup(each.value.geolocation_routing_policy, "country", "")
+      subdivision = lookup(each.value.geolocation_routing_policy, "subdivision", "")
+    }
+  }
+
+  dynamic "latency_routing_policy" {
+    for_each = length(keys(lookup(each.value, "latency_routing_policy", {}))) == 0 ? [] : [true]
+
+    content {
+      region = each.value.latency_routing_policy.region
+    }
+  }
 }
